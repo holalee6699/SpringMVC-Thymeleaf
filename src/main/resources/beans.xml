@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:aop="http://www.springframework.org/schema/aop"
+       xmlns:mybatis="http://mybatis.org/schema/mybatis-spring"
+       xmlns:tx="http://www.springframework.org/schema/tx"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+        https://www.springframework.org/schema/beans/spring-beans.xsd
+        http://www.springframework.org/schema/context
+        http://www.springframework.org/schema/context/spring-context.xsd
+        http://www.springframework.org/schema/aop
+        http://www.springframework.org/schema/aop/spring-aop.xsd
+        http://www.springframework.org/schema/tx
+        http://www.springframework.org/schema/tx/spring-tx.xsd
+        http://mybatis.org/schema/mybatis-spring
+        http://mybatis.org/schema/mybatis-spring.xsd">
+
+    <!--  加载资源文件  -->
+    <context:property-placeholder location="classpath:jdbc.properties"/>
+
+    <!--  组件扫描  -->
+    <context:component-scan base-package="com.holalee.github.dao"/>
+    <context:component-scan base-package="com.holalee.github.service"/>
+
+    <bean id="dataSource" class="com.alibaba.druid.pool.DruidDataSource">
+        <!--    数据库驱动    -->
+        <property name="driverClassName" value="${driverClassName}"/>
+        <!--    数据库访问地址    -->
+        <property name="url" value="${url}"/>
+        <!--    账户    -->
+        <property name="username" value="root"/>
+        <!--    密码    -->
+        <property name="password" value="${password}"/>
+
+        <!--     初使连接数    -->
+        <property name="initialSize" value="5"/>
+        <!--    最小连接数    -->
+        <property name="minIdle" value="5"/>
+        <!--    最大连接数    -->
+        <property name="maxActive" value="20"/>
+        <!--    获取连接的最大等待时间    -->
+        <property name="maxWait" value="5000"/>
+    </bean>
+
+    <!--sqlSessionFactory-->
+    <bean id="sqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">
+        <property name="dataSource" ref="dataSource"/>
+        <property name="typeAliasesPackage" value="com.holalee.github.entry"/>
+    </bean>
+
+
+    <!--  扫描mybatis映射器  -->
+    <mybatis:scan base-package="com.holalee.github.dao"/>
+
+    <!-- 事务管理器 -->
+    <bean id="transactionManager" class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
+        <property name="dataSource" ref="dataSource"/>
+    </bean>
+
+    <!--  配置事务Advice(java:org.springframework.transaction.interceptor.TransactionInterceptor)  -->
+    <tx:advice id="txAdvice" transaction-manager="transactionManager">
+        <tx:attributes>
+            <tx:method name="get*" propagation="SUPPORTS" read-only="true"/>
+            <tx:method name="find*" propagation="SUPPORTS" read-only="true"/>
+            <tx:method name="query*" propagation="SUPPORTS" read-only="true"/>
+
+            <tx:method name="*" propagation="REQUIRED" isolation="READ_COMMITTED" rollback-for="java.lang.Exception"/>
+        </tx:attributes>
+    </tx:advice>
+
+    <!--  配置事务切面(声明式事务)  -->
+    <aop:config>
+        <!--  通过aspectj表达式配置切点，声明哪些类哪些方法需要事务 -->
+        <aop:pointcut id="txPointcut" expression="execution(* com.holalee.github.service..*.*(..))"/>
+        <!-- AOP = Advice + Pointcut -->
+        <aop:advisor advice-ref="txAdvice" pointcut-ref="txPointcut"/>
+    </aop:config>
+
+
+</beans>

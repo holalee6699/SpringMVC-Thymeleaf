@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE configuration
+        PUBLIC "-//mybatis.org//DTD Config 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-config.dtd">
+<configuration>
+    <properties resource="jdbc.properties">
+        <property name="driver" value="com.mysql.cj.jdbc.Driver"/>
+        <property name="url" value="jdbc:mysql://127.0.0.1:3306/alone?useUnicode=true&amp;characterEncoding=utf-8&amp;useSSL=false"/>
+        <property name="username" value="root"/>
+        <property name="password" value="root"/>
+    </properties>
+
+
+    <!-- 日志 -->
+    <settings>
+        <!-- 日志 -->
+        <setting name="logImpl" value="STDOUT_LOGGING"/>
+
+        <!--  是否开启驼峰命名自动映射  -->
+        <setting name="mapUnderscoreToCamelCase" value="true"/>
+
+        <!-- 指定对象的哪些方法触发一次延迟加载。value="equals,clone,hashCode,toString"-->
+        <setting name="lazyLoadTriggerMethods" value=""/>
+
+        <!-- 一级缓存（本地缓存）,可选值：SESSION(默认) | STATEMENT -->
+        <setting name="localCacheScope" value="SESSION"/>
+
+        <!-- 是否开启二级缓存，默认开启（true） -->
+        <setting name="cacheEnabled" value="true"/>
+    </settings>
+
+    <!-- 设置别名 -->
+    <typeAliases>
+        <package name="com.holalee.github.entry"/>
+    </typeAliases>
+
+    
+    <!--  环境配置 -->
+    <environments default="development">
+        <environment id="development">
+            <transactionManager type="JDBC"/>
+            <dataSource type="POOLED">
+                <property name="driver" value="${driver}"/>
+                <property name="url" value="${url}"/>
+                <property name="username" value="${username}"/>
+                <property name="password" value="${password}"/>
+            </dataSource>
+        </environment>
+    </environments>
+
+
+    <!--   注册映射器  -->
+    <mappers>
+        <package name="com.holalee.github.dao"/>
+    </mappers>
+</configuration>

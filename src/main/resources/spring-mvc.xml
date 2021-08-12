@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:mvc="http://www.springframework.org/schema/mvc"
+       xmlns:mybatis="http://mybatis.org/schema/mybatis-spring"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+        https://www.springframework.org/schema/beans/spring-beans.xsd
+        http://www.springframework.org/schema/context
+        http://www.springframework.org/schema/context/spring-context.xsd
+        http://www.springframework.org/schema/mvc
+        http://www.springframework.org/schema/mvc/spring-mvc.xsd
+        http://mybatis.org/schema/mybatis-spring
+        http://mybatis.org/schema/mybatis-spring.xsd">
+
+    <!--组件扫描-->
+    <context:component-scan base-package="com.holalee.github.web"/>
+
+    <!--  视图解析器 -->
+<!--    <bean class="org.springframework.web.servlet.view.InternalResourceViewResolver">-->
+<!--        &lt;!&ndash;-->
+<!--              viewClass,视图，默认：InternalResourceView-->
+<!--              JstlView是InternalResourceView子视图，增加了对JSTL标签库的支持-->
+<!--          &ndash;&gt;-->
+<!--        <property name="viewClass" value="org.springframework.web.servlet.view.JstlView"/>-->
+<!--        &lt;!&ndash;  视图路径的前缀 &ndash;&gt;-->
+<!--        <property name="prefix" value="/WEB-INF/views/"/>-->
+<!--        &lt;!&ndash;  视图路径的后置 &ndash;&gt;-->
+<!--        <property name="suffix" value=".jsp"/>-->
+<!--        &lt;!&ndash;  影响的内容类型及字符编码 &ndash;&gt;-->
+<!--        <property name="contentType" value="text/html;charset=UTF-8"/>-->
+<!--    </bean>-->
+
+    <bean id="templateResolver" class="org.thymeleaf.spring4.templateresolver.SpringResourceTemplateResolver">
+        <property name="prefix" value="/" />
+        <property name="suffix" value=".html" />
+        <property name="templateMode" value="HTML" />
+        <property name="cacheable" value="false" />
+        <property name="characterEncoding" value="UTF-8"/>
+    </bean>
+
+    <bean id="templateEngine" class="org.thymeleaf.spring4.SpringTemplateEngine">
+        <property name="templateResolver" ref="templateResolver" />
+    </bean>
+
+    <!--    视图解析器-->
+    <bean id="viewResolver" class="org.thymeleaf.spring4.view.ThymeleafViewResolver">
+        <property name="templateEngine" ref="templateEngine" />
+        <property name="characterEncoding" value="UTF-8"/>
+    </bean>
+
+    <!--  通过org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerAdapter，生成请求映射  -->
+    <mvc:annotation-driven>
+        <mvc:message-converters>
+            <!--  消息转换器，转换由@RequestBody所标注的方法参数或者由@RequestBody所标注得方法返回值 -->
+            <bean class="org.springframework.http.converter.json.MappingJackson2HttpMessageConverter"/>
+        </mvc:message-converters>
+    </mvc:annotation-driven>
+
+    <!--  声明简单视图k控制器（内部有org.springframework.web.servlet.mvc.ParameterizableViewController统一处理）  -->
+    <mvc:view-controller path="/" view-name="index"/>
+
+    <!--处理静态文件(CSS、JS、图片)-->
+    <mvc:resources mapping="/assets/**" location="/assets/"/>
+
+</beans>

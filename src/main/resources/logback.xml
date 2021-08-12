@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration scan="true" scanPeriod="30 seconds" debug="false">
+	<property name="log.home" value="./" />
+	<property name="app.name" value="demo" />
+	<property name="maxHistory" value="7" />
+
+	<contextName>${app.name}</contextName>
+
+	<property name="PATTERN"
+			  value="%d{yyyy-MM-dd HH:mm:ss.SSS} %thread %-5level %logger{100} %msg %n" />
+
+	<appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
+		<encoder charset="UTF-8">
+			<pattern>${PATTERN}</pattern>
+		</encoder>
+	</appender>
+
+	<appender name="FILE_DEBUG"
+			  class="ch.qos.logback.core.rolling.RollingFileAppender">
+		<file>${log.home}/logs/${app.name}_debug.log</file>
+		<append>true</append>
+		<filter class="ch.qos.logback.classic.filter.LevelFilter">
+			<level>DEBUG</level>
+			<onMatch>ACCEPT</onMatch>
+			<onMismatch>DENY</onMismatch>
+		</filter>
+		<rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+			<fileNamePattern>${log.home}/logs/${app.name}_debug.%d{yyyy-MM-dd}.log
+			</fileNamePattern>
+			<maxHistory>${maxHistory}</maxHistory>
+		</rollingPolicy>
+		<encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
+			<Pattern>${PATTERN}</Pattern>
+		</encoder>
+	</appender>
+
+	<appender name="FILE_INFO"
+			  class="ch.qos.logback.core.rolling.RollingFileAppender">
+		<file>${log.home}/logs/${app.name}_info.log</file>
+		<filter class="ch.qos.logback.classic.filter.LevelFilter">
+			<level>INFO</level>
+			<onMatch>ACCEPT</onMatch>
+			<onMismatch>DENY</onMismatch>
+		</filter>
+		<rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+			<fileNamePattern>${log.home}/logs/${app.name}_info.%d{yyyy-MM-dd}.log
+			</fileNamePattern>
+			<maxHistory>${maxHistory}</maxHistory>
+		</rollingPolicy>
+		<encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
+			<Pattern>${PATTERN}</Pattern>
+		</encoder>
+	</appender>
+
+	<appender name="FILE_WARN"
+			  class="ch.qos.logback.core.rolling.RollingFileAppender">
+		<file>${log.home}/logs/${app.name}_warn.log</file>
+		<filter class="ch.qos.logback.classic.filter.ThresholdFilter">
+			<level>WARN</level>
+		</filter>
+		<rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+			<fileNamePattern>${log.home}/logs/${app.name}_warn.%d{yyyy-MM-dd}.log
+			</fileNamePattern>
+			<maxHistory>${maxHistory}</maxHistory>
+		</rollingPolicy>
+		<encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
+			<Pattern>${PATTERN}</Pattern>
+		</encoder>
+	</appender>
+
+	<appender name="FILE_ERROR"
+			  class="ch.qos.logback.core.rolling.RollingFileAppender">
+		<file>${log.home}/logs/${app.name}_error.log</file>
+		<filter class="ch.qos.logback.classic.filter.LevelFilter">
+			<level>ERROR</level>
+			<onMatch>ACCEPT</onMatch>
+			<onMismatch>DENY</onMismatch>
+		</filter>
+		<rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+			<fileNamePattern>${log.home}/logs/${app.name}_error.%d{yyyy-MM-dd}.log
+			</fileNamePattern>
+			<maxHistory>${maxHistory}</maxHistory>
+		</rollingPolicy>
+		<encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
+			<Pattern>${PATTERN}</Pattern>
+		</encoder>
+	</appender>
+
+	<logger name="org.springframework" level="DEBUG" />
+	<logger name="org.apache.ibatis" level="DEBUG" />
+	<logger name="java.sql" level="DEBUG" />
+	<logger name="com.holalee.github" level="DEBUG" />
+
+
+	<root level="DEBUG">
+		<appender-ref ref="CONSOLE" />
+		<appender-ref ref="FILE_DEBUG" />
+		<appender-ref ref="FILE_INFO" />
+		<appender-ref ref="FILE_WARN" />
+		<appender-ref ref="FILE_ERROR" />
+	</root>
+
+</configuration>

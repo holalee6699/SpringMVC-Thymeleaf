@@ -1,0 +1,116 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.holalee.github.dao.UserDao">
+    <resultMap id="baseResultMap" type="User">
+        <id property="id" column="id"/>
+        <id property="username" column="username"/>
+        <id property="password" column="password"/>
+        <id property="nickname" column="nickname"/>
+        <id property="status" column="status"/>
+        <id property="createdTime" column="created_time"/>
+    </resultMap>
+    
+    <!-- 可被其它语句引用的可重用语句块 -->
+    <sql id="baseQuerySql">
+        select id, username, password, nickname, status, created_time from user
+    </sql>
+
+    <select id="selectByStatus" resultType="User">
+        <include refid="baseQuerySql"/> where status = #{status}
+    </select>
+
+
+    <!-- 根据主键查询-->
+    <select id="selectById" resultMap="baseResultMap">
+        <include refid="baseQuerySql"/> where id = #{id}
+    </select>
+
+
+            <!-- #通吃，范围广 -->
+    <select id="selectByUsername" resultMap="baseResultMap">
+        <include refid="baseQuerySql"/> where username = #{username}
+    </select>
+
+    <!--  组合查询  -->
+    <select id="selectUsers" resultMap="baseResultMap">
+        <include refid="baseQuerySql"/>
+        <where>
+<!--            <if test="user.username != null and user.username != ''">-->
+<!--                and username = #{user.username}-->
+<!--            </if>-->
+<!--            <if test="user.nickname != null and user.nickname != ''">-->
+<!--                and nickname = #{user.nickname}-->
+<!--            </if>-->
+            <if test="user.username != null and user.username != ''">
+                and (username like concat('%',#{user.username},'%') OR nickname like concat('%',#{user.nickname},'%'))
+            </if>
+            <if test="user.status != null">
+                and status = #{user.status}
+            </if>
+        </where>
+        order by created_time desc
+        <if test="offset != null and size != null">
+            LIMIT #{offset}, #{size};
+        </if>
+    </select>
+
+    <!--  统计记录数  -->
+    <select id="count" resultType="int">
+        select count(id) from user
+        <where>
+<!--            <if test="user.username != null and user.username != ''">-->
+<!--                and username = #{user.username}-->
+<!--            </if>-->
+<!--            <if test="user.nickname != null and user.nickname != ''">-->
+<!--                and nickname = #{user.nickname}-->
+<!--            </if>-->
+            <if test="user.username != null and user.username != ''">
+                and (username like concat('%',#{user.username},'%') OR nickname like concat('%',#{user.username},'%'))
+            </if>
+            <if test="user.status != null">
+                and status = #{user.status}
+            </if>
+        </where>
+    </select>
+
+    <!-- 新增 -->
+    <insert id="insert">
+        insert into user (id,username,password,nickname,status,created_time)
+        values(#{id},#{username},#{password},#{nickname},#{status},#{createdTime})
+    </insert>
+
+    <!-- 修改 -->
+    <update id="update">
+        update user
+        <set>
+            <if test="username != null and username != ''">
+                  username = #{username},
+            </if>
+            <if test="nickname != null and nickname != ''">
+                  nickname = #{nickname},
+            </if>
+            <if test="status != null and status != ''">
+                status = #{status},
+            </if>
+            <if test="lastModifiedTime != null">
+                last_modified_time = #{lastModifiedTime},
+            </if>
+        </set>
+            where id = #{id}
+        </update>
+
+        <!-- 删除 -->
+    <delete id="delete">
+        delete from user where id = #{id}
+    </delete>
+
+    <!-- 批量删除 -->
+    <delete id="batchDelete">
+        delete from user where id in
+        <foreach item="id" collection="ids" open="(" close=")" separator=",">
+            #{id}
+        </foreach>
+    </delete>
+</mapper>
